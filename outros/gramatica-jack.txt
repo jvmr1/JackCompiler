@@ -1,0 +1,14 @@
+statement:    ifStatement 
+              | whileStatement 
+              | letStatement
+statements: statement*
+ifStatement: 'if' '(' expression ')’
+				'{' statements '}’
+whileStatement: 'while' '(' expression ')’
+				'{' statements '}’
+letStatement: 'let' varName '=' expression ';'
+expression: term (op term)?
+term: varName | constant
+varName: a string not beginning with a digit
+constant: a decimal number
+op: '+'|'|'-'|'='|'>'|'<'
