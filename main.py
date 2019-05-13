@@ -1,3 +1,4 @@
+import re
 from CompilationEngine import CompilationEngine
 
 compEng = CompilationEngine('Main.jack')
