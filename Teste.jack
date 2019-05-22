@@ -1,4 +1,7 @@
 class Main {
+  static int x,y, z;
+  field boolean a, b;
+
   function void main() {
     do Output.printInt(1 + (2 * 3));
     return;

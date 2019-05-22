@@ -1,17 +1,48 @@
-
-
 class SymbolTable():
     def __init__(self):
         #criar um dict?
+        self.classTable={}
+        self.subroutineTable={}
+        self.kindIndex = {'static':0, 'field':0, 'arg':0, 'var':0}
+
 
     def startSubroutine(self):
+        self.subroutineTable.clear()
+        self.kindIndex['arg'] = 0
+        self.kindIndex['var'] = 0
 
     def define(self, name, type, kind):
+        if kind in ('static', 'field'):
+            self.classTable[name] = (type, kind, self.kindIndex[kind])
+
+        elif kind in ('arg', 'var'):
+            self.subroutineTable[name] = (type, kind, self.kindIndex[kind])
+
+        self.kindIndex[kind]=self.kindIndex[kind]+1
 
     def varCount(self, kind):
+        return self.kindIndex[kind]
 
     def kindOf(self, name):
+        if name in self.subroutineTable:
+            return self.subroutineTable[name][1]
+
+        elif name in self.classTable:
+            return self.classTable[name][1]
+
+        else:
+            return 'NONE'
 
     def typeOf(self, name):
+        if name in self.classTable:
+            return self.classTable[name][0]
+
+        elif name in self.subroutineTable:
+            return self.subroutineTable[name][0]
 
     def indexOf(self, name):
+        if name in self.classTable:
+            return self.classTable[name][2]
+
+        elif name in self.subroutineTable:
+            return self.subroutineTable[name][2]

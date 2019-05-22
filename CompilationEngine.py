@@ -1,12 +1,15 @@
 from JackTokenizer import JackTokenizer
+from SymbolTable import SymbolTable
 
 class CompilationEngine():
 
     #Constructor
     def __init__(self, input_file):
+        self.st=SymbolTable()
         self._vm_string = ''
         self.tknz = JackTokenizer(input_file)
         self.tknz.advance()
+
 
     def eat(self, vetor):
         if (self.tknz.getToken() in vetor):
@@ -29,6 +32,9 @@ class CompilationEngine():
         self.compileClassName()
         self.eat('{')
         self.compileClassVarDec()
+        for keys,values in self.st.classTable.items():
+            print(keys)
+            print(values)
         self.compileSubroutineDec()
         self.eat('}')
         self._vm_string += '</class>\n'
@@ -44,13 +50,15 @@ class CompilationEngine():
             self.compileType()
             self.name=self.tknz.getToken()
             self.compileVarName()
-            #com kind, type e name definidos, criar a tabela de simbolos com define
-            #
+            self.st.define(self.name, self.type, self.kind) #com kind, type e name da variavel definidos, inserir entrada na symboltable
             while self.tknz.getToken() == ',':
                 self.eat(',')
+                self.name=self.tknz.getToken()
                 self.compileVarName()
+                self.st.define(self.name, self.type, self.kind)
             self.eat(';')
-            self._vm_string += '</classVarDec>\n'
+
+            #self._vm_string += '</classVarDec>\n'
             self.compileClassVarDec()
 
     def compileSubroutineDec(self):
