@@ -24,7 +24,7 @@ class CompilationEngine():
 
     def compileClass(self):
         # 'class' className '{' classVarDec* subroutineDec* '}'
-        self._vm_string += '<class>\n'
+        #self._vm_string += '<class>\n'
         self.eat('class')
         self.compileClassName()
         self.eat('{')
@@ -37,10 +37,15 @@ class CompilationEngine():
     def compileClassVarDec(self):
         #( 'static' | 'field' ) type varName ( ',' varName)* ';'
         if (self.tknz.getToken() in ['static', 'field']):
-            self._vm_string += '<classVarDec>\n'
+            #self._vm_string += '<classVarDec>\n'
+            self.kind=self.tknz.getToken()
             self.eat(['static', 'field'])
+            self.type=self.tknz.getToken()
             self.compileType()
+            self.name=self.tknz.getToken()
             self.compileVarName()
+            #com kind, type e name definidos, criar a tabela de simbolos com define
+            #
             while self.tknz.getToken() == ',':
                 self.eat(',')
                 self.compileVarName()
@@ -237,6 +242,8 @@ class CompilationEngine():
     def compileClassName(self):
         #identifier
         self.eatType('identifier')
+        self.ClassName=self.tknz.getToken()
+
 
     def compileSubroutineName(self):
         #identifier
