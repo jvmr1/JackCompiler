@@ -28,8 +28,10 @@ class SymbolTable():
             return self.subroutineTable[name][1]
 
         elif name in self.classTable:
-            return self.classTable[name][1]
-
+            if self.classTable[name][1] == 'field':
+                return 'this'
+            else:
+                return self.classTable[name][1]
         else:
             return 'NONE'
 
@@ -46,3 +48,10 @@ class SymbolTable():
 
         elif name in self.subroutineTable:
             return self.subroutineTable[name][2]
+
+    def findTable(self, name):
+        if name in self.classTable:
+            return 'class'
+
+        elif name in self.subroutineTable:
+            return 'subroutine'
