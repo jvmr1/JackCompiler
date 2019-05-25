@@ -5,18 +5,19 @@ class SymbolTable():
         self.subroutineTable={}
         self.kindIndex = {'static':0, 'field':0, 'arg':0, 'var':0}
 
-
     def startSubroutine(self):
         self.subroutineTable.clear()
         self.kindIndex['arg'] = 0
         self.kindIndex['var'] = 0
 
-    def define(self, name, type, kind):
+    def define(self, name, tokenType, kind):
         if kind in ('static', 'field'):
-            self.classTable[name] = (type, kind, self.kindIndex[kind])
+            self.classTable[name] = (tokenType, kind, self.kindIndex[kind])
+            print(name, self.classTable[name])
 
         elif kind in ('arg', 'var'):
-            self.subroutineTable[name] = (type, kind, self.kindIndex[kind])
+            self.subroutineTable[name] = (tokenType, kind, self.kindIndex[kind])
+            print(name, self.subroutineTable[name])
 
         self.kindIndex[kind]=self.kindIndex[kind]+1
 

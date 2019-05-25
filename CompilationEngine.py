@@ -1,24 +1,26 @@
 from JackTokenizer import JackTokenizer
 from SymbolTable import SymbolTable
+from VMWriter import VMWriter
 
 class CompilationEngine():
     def __init__(self, input_file):
         self.st=SymbolTable()
-        self._vm_string = ''
+        self.vmW = VMWriter()
         self.tknz = JackTokenizer(input_file)
+        self._vm_string = ''
         self.tknz.advance()
 
     def eat(self, vetor):
         if (self.tknz.getToken() in vetor):
             self.tknz.advance()
-        # else:
-        #     raise Exception ("Esperado '"+str(vetor)+"' encontrado '"+self.tknz.getToken()+"'")
+        else:
+            raise Exception ("Esperado '"+str(vetor)+"' encontrado '"+self.tknz.getToken()+"'")
 
     def eatType(self, vetor):
         if (self.tknz.tokenType() in vetor):
             self.tknz.advance()
-        # else:
-        #     raise Exception ("Esperado '"+str(vetor)+"' encontrado '"+self.tknz.tokenType()+"'")
+        else:
+            raise Exception ("Esperado '"+str(vetor)+"' encontrado '"+self.tknz.tokenType()+"'")
 
     def compileClass(self):
         self.eat('class')
@@ -34,36 +36,39 @@ class CompilationEngine():
 
     def compileClassVarDec(self):
         if (self.tknz.getToken() in ['static', 'field']):
-            self.kind=self.tknz.getToken()
+            kind=self.tknz.getToken()
             self.eat(['static', 'field'])
-            self.type=self.tknz.getToken()
+            tokenType=self.tknz.getToken()
             self.compileType()
-            self.name=self.tknz.getToken()
+            name=self.tknz.getToken()
             self.compileVarName()
-            self.st.define(self.name, self.type, self.kind) #com kind, type e name da variavel definidos, inserir entrada na symboltable
+            self.st.define(name, tokenType, kind) #com kind, type e name da variavel definidos, inserir entrada na symboltable
             while self.tknz.getToken() == ',':
                 self.eat(',')
-                self.name=self.tknz.getToken()
+                name=self.tknz.getToken()
                 self.compileVarName()
-                self.st.define(self.name, self.type, self.kind)
+                self.st.define(name, tokenType, kind)
             self.eat(';')
             self.compileClassVarDec()
 
     def compileSubroutineDec(self):
         if (self.tknz.getToken() in ['constructor', 'function', 'method']):
             self.st.startSubroutine()
-            # self.type = self.className
-            # self.kind = 'arg'
-            # self.name = 'this'
-            # self.st.define(self.name, self.type, self.kind)
-            self.subroutineKind=self.tknz.getToken()
+            if self.tknz.getToken() == 'method':
+                tokenType = self.className
+                kind = 'arg'
+                name = 'this'
+                self.st.define(name, tokenType, kind)
+            subroutineKind=self.tknz.getToken()
             self.eat(['constructor', 'function', 'method'])
-            self.subroutineType=self.tknz.getToken()
+            subroutineType=self.tknz.getToken()
             if self.tknz.getToken() == 'void':
                 self.eat('void')
             else:
                 self.compileType()
-            self.subroutineName=self.tknz.getToken()
+            subroutineName=self.tknz.getToken()
+            functionName = self.className + '.' + subroutineName
+            self._vm_string += self.vmW.writeFunction(functionName, self.st.varCount('var'))
             self.compileSubroutineName()
             self.eat('(')
             self.compileParameterList()
@@ -73,12 +78,12 @@ class CompilationEngine():
 
     def compileParameterList(self):
         while self.tknz.getToken() != ')':
-            # self.type = self.className
-            # self.kind = 'arg'
-            # self.name = 'this'
-            # self.st.define(self.name, self.type, self.kind)
+            tokenType = self.tknz.getToken()
             self.compileType()
+            name = self.tknz.getToken()
             self.compileVarName()
+            kind = 'arg'
+            self.st.define(name, tokenType, kind)
             if (self.tknz.getToken()==','):
                 self.eat(',')
 
@@ -91,11 +96,17 @@ class CompilationEngine():
 
     def compileVarDec(self):
         self.eat('var')
+        tokenType = self.tknz.getToken()
         self.compileType()
+        name = self.tknz.getToken()
         self.compileVarName()
+        kind = 'var'
+        self.st.define(name, tokenType, kind)
         while self.tknz.getToken() == ',':
             self.eat(',')
+            name = self.tknz.getToken()
             self.compileVarName()
+            self.st.define(name, tokenType, kind)
         self.eat(';')
 
     def compileStatements(self):
@@ -152,10 +163,12 @@ class CompilationEngine():
 
     def compileDo(self):
         self.eat('do')
+        self.compileClassName()
         self.compileSubroutineCall()
         self.eat(';')
 
     def compileReturn(self):
+        self._vm_string += self.vmW.writeReturn()
         self.eat('return')
         if (self.tknz.getToken()!=';'):
             self.compileExpression()
@@ -183,6 +196,8 @@ class CompilationEngine():
                 self.eat('[')
                 self.compileExpression()
                 self.eat(']')
+            elif (self.tknz.getToken()=='.'):
+                self.compileSubroutineCall()
 
     def compileExpressionList(self):
         while self.tknz.getToken()!=')':
@@ -191,16 +206,15 @@ class CompilationEngine():
                 self.eat(',')
 
     def compileType(self):
-        vetor = ['int','char','boolean', 'String', 'Array', 'Square', 'SquareGame']
-        if (self.tknz.getToken() in vetor ):
+        vetor = ['int','char','boolean', 'String']
+        if (self.tknz.getToken() in vetor or self.tknz.tokenType() == 'identifier'):
             self.tknz.advance()
         else:
             raise Exception ("Esperado 'int' | 'char' | 'boolean' | className encontrado '"+self.tknz.getToken()+"'")
 
     def compileClassName(self):
+        self.className=self.tknz.getToken()
         self.eatType('identifier')
-        self.ClassName=self.tknz.getToken()
-
 
     def compileSubroutineName(self):
         self.eatType('identifier')
@@ -209,7 +223,6 @@ class CompilationEngine():
         self.eatType('identifier')
 
     def compileSubroutineCall(self):
-        self.compileClassName()
         if (self.tknz.getToken()=='.'):
             self.eat('.')
             self.compileSubroutineName()
@@ -234,7 +247,6 @@ class CompilationEngine():
             self.tknz.advance()
         else:
             raise Exception ("Esperado '-' | '~' encontrado '"+self.tknz.getToken()+"'")
-
 
     def compileKeywordConstant(self):
         vetor = ['true', 'false', 'null', 'this']
