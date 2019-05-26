@@ -29,6 +29,9 @@ class VMWriter():
         return 'function ' + name + ' ' + str(nLocals) + '\n'
 
     def writeReturn(self):
+        # pop temp 0
+        # push constant 0
+        # printar essas coisas no vm quando o return nao tiver nada
         return 'return'
 
     def close(self):

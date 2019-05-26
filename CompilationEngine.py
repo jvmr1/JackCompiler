@@ -27,9 +27,6 @@ class CompilationEngine():
         self.compileClassName()
         self.eat('{')
         self.compileClassVarDec()
-        # for keys,values in self.st.classTable.items():
-        #     print(keys)
-        #     print(values)
         self.compileSubroutineDec()
         self.eat('}')
         return self._vm_string
@@ -66,13 +63,11 @@ class CompilationEngine():
                 self.eat('void')
             else:
                 self.compileType()
-            subroutineName=self.tknz.getToken()
-            functionName = self.className + '.' + subroutineName
-            self._vm_string += self.vmW.writeFunction(functionName, self.st.varCount('var'))
             self.compileSubroutineName()
             self.eat('(')
             self.compileParameterList()
             self.eat(')')
+            self._vm_string += self.vmW.writeFunction(self.functionName, self.st.varCount('arg'))
             self.compileSubroutineBody()
             self.compileSubroutineDec()
 
@@ -128,6 +123,7 @@ class CompilationEngine():
             raise Exception ("Esperado 'let | if | while | do | return' encontrado '"+self.tknz.getToken()+"'")
 
     def compileLet(self):
+        #writePop
         self.eat('let')
         self.compileVarName()
         if (self.tknz.getToken()=='['):
@@ -139,6 +135,9 @@ class CompilationEngine():
         self.eat(';')
 
     def compileIf(self):
+        #writeIf
+        #writeGoto
+        #writeLabel
         self.eat('if')
         self.eat('(')
         self.compileExpression()
@@ -153,6 +152,9 @@ class CompilationEngine():
             self.eat('}')
 
     def compileWhile(self):
+        #writeIf
+        #writeGoto
+        #writeLabel
         self.eat('while')
         self.eat('(')
         self.compileExpression()
@@ -168,11 +170,11 @@ class CompilationEngine():
         self.eat(';')
 
     def compileReturn(self):
-        self._vm_string += self.vmW.writeReturn()
         self.eat('return')
         if (self.tknz.getToken()!=';'):
-            self.compileExpression()
+            self.compileExpression() #caso seja tipo return 0; é preciso printar esse 0 no vm?
         self.eat(';')
+        self._vm_string += self.vmW.writeReturn()
 
     def compileExpression(self):
         self.compileTerm()
@@ -181,6 +183,7 @@ class CompilationEngine():
             self.compileTerm()
 
     def compileTerm(self):
+        #writePush
         if (self.tknz.tokenType() in ['intConst', 'stringConst', 'keyword']):
             self.tknz.advance()
         elif (self.tknz.getToken()=='('):
@@ -217,12 +220,15 @@ class CompilationEngine():
         self.eatType('identifier')
 
     def compileSubroutineName(self):
+        self.subroutineName=self.tknz.getToken()
+        self.functionName = self.className + '.' + self.subroutineName
         self.eatType('identifier')
 
     def compileVarName(self):
         self.eatType('identifier')
 
     def compileSubroutineCall(self):
+        #writeCall
         if (self.tknz.getToken()=='.'):
             self.eat('.')
             self.compileSubroutineName()
@@ -235,6 +241,8 @@ class CompilationEngine():
             self.eat(')')
 
     def compileOp(self):
+        #writeCall
+        #writeArithmetic
         vetor = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
         if (self.tknz.getToken() in vetor ):
             self.tknz.advance()

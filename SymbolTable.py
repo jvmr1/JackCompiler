@@ -56,3 +56,16 @@ class SymbolTable():
 
         elif name in self.subroutineTable:
             return 'subroutine'
+
+
+    # def compileClass(self):
+    #     self.eat('class')
+    #     self.compileClassName()
+    #     self.eat('{')
+    #     self.compileClassVarDec()
+    #     # for keys,values in self.st.classTable.items():
+    #     #     print(keys)
+    #     #     print(values)
+    #     self.compileSubroutineDec()
+    #     self.eat('}')
+    #     return self._vm_string
