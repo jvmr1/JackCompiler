@@ -7,5 +7,4 @@ compEng = CompilationEngine('Teste.jack')
 vm_string = compEng.compileClass()
 print(vm_string) #opcional
 with open('Teste.vm', 'w') as vm:
-    #if type(vm_string) == str: #necessario? Acho que não kkkkk
     vm.write(vm_string)

@@ -185,6 +185,8 @@ class CompilationEngine():
     def compileTerm(self):
         #writePush
         if (self.tknz.tokenType() in ['intConst', 'stringConst', 'keyword']):
+            if (self.tknz.tokenType() == 'intConst'): #desnecessario, talvez
+                self._vm_string += self.vmW.writePush('constant', self.tknz.getToken())
             self.tknz.advance()
         elif (self.tknz.getToken()=='('):
             self.eat('(')

@@ -5,24 +5,29 @@ class VMWriter():
     #criar arquivo .vm pra escrever
 
     def writePush(self, segment, index):
+        if segment == 'var':
+            return 'push ' + 'local' + ' ' + str(index)+ '\n'
+        elif segment == 'arg':
+            return 'push ' + 'argument' + ' ' + str(index)+ '\n'
+        else:
+            return 'push ' + segment + ' ' + str(index)+ '\n'
+
+    def writePop(self, segment, index):
         return
 
-    def writePop(self):
+    def writeArithmetic(self, command):
         return
 
-    def writeArithmetic(self):
+    def writeLabel(self, label):
         return
 
-    def writeLabel(self):
+    def writeGoto(self, label):
         return
 
-    def writeGoto(self):
+    def writeIf(self, label):
         return
 
-    def writeIf(self):
-        return
-
-    def writeCall(self):
+    def writeCall(self, name, nArgs):
         return
 
     def writeFunction(self, name, nLocals):
