@@ -13,7 +13,12 @@ class VMWriter():
             return 'push ' + segment + ' ' + str(index)+ '\n'
 
     def writePop(self, segment, index):
-        return
+        if segment == 'var':
+            return 'pop ' + 'local' + ' ' + str(index)+ '\n'
+        elif segment == 'arg':
+            return 'pop ' + 'argument' + ' ' + str(index)+ '\n'
+        else:
+            return 'pop ' + segment + ' ' + str(index)+ '\n'
 
     def writeArithmetic(self, command):
         if (command=='+'):

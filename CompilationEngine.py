@@ -170,12 +170,15 @@ class CompilationEngine():
         self.compileSubroutineCall()
         self.eat(';')
         self._vm_string += self.vmW.writeCall(self.functionName, self.expCount)
+        self._vm_string += self.vmW.writePop('temp', 0) #por que?
 
 
     def compileReturn(self):
         self.eat('return')
         if (self.tknz.getToken()!=';'):
-            self.compileExpression() #caso seja tipo return 0; é preciso printar esse 0 no vm?
+            self.compileExpression()
+        else:
+            self._vm_string += self.vmW.writePush('constant', 0)
         self.eat(';')
         self._vm_string += self.vmW.writeReturn()
 
