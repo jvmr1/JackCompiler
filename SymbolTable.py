@@ -1,6 +1,5 @@
 class SymbolTable():
     def __init__(self):
-        #criar um dict?
         self.classTable={}
         self.subroutineTable={}
         self.kindIndex = {'static':0, 'field':0, 'arg':0, 'var':0}

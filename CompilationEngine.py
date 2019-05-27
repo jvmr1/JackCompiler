@@ -9,6 +9,7 @@ class CompilationEngine():
         self.tknz = JackTokenizer(input_file)
         self._vm_string = ''
         self.tknz.advance()
+        self.Op=[]
 
     def eat(self, vetor):
         if (self.tknz.getToken() in vetor):
@@ -181,6 +182,12 @@ class CompilationEngine():
         while self.tknz.getToken() in ['+', '-', '*', '/', '&', '|', '<', '>', '=']:
             self.compileOp()
             self.compileTerm()
+            if (self.Op[-1] in ['+', '-']):
+                op=self.Op.pop(-1)
+                self._vm_string += self.vmW.writeArithmetic(op)
+            elif (self.Op[-1] in ['*', '/']):
+                op=self.Op.pop(-1)
+                self._vm_string += self.vmW.writeCall(self.vmW.writeArithmetic(op), 2)
 
     def compileTerm(self):
         #writePush
@@ -245,8 +252,14 @@ class CompilationEngine():
     def compileOp(self):
         #writeCall
         #writeArithmetic
+        #self._vm_string += self.vmW.writeFunction(self.functionName, self.st.varCount('arg'))
         vetor = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
         if (self.tknz.getToken() in vetor ):
+            # if (self.tknz.getToken() in ['+', '-']):
+            #     self._vm_string += self.vmW.writeArithmetic(self.tknz.getToken())
+            # elif (self.tknz.getToken() in ['*', '/']):
+            #     self._vm_string += self.vmW.writeCall(self.vmW.writeArithmetic(self.tknz.getToken()), 2)
+            self.Op.append(self.tknz.getToken())
             self.tknz.advance()
         else:
             raise Exception ("Esperado '+' | '-' | '* | '/' | '&' | '|' | '<' | '>' | '=' encontrado '"+self.tknz.getToken()+"'")

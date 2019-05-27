@@ -16,7 +16,14 @@ class VMWriter():
         return
 
     def writeArithmetic(self, command):
-        return
+        if (command=='+'):
+            return 'add'+'\n'
+        if (command=='-'):
+            return 'sub'+'\n'
+        if (command=='*'):
+            return 'Math.multiply'
+        if (command=='/'):
+            return 'Math.divide'
 
     def writeLabel(self, label):
         return
@@ -28,7 +35,7 @@ class VMWriter():
         return
 
     def writeCall(self, name, nArgs):
-        return
+        return 'call ' + name + ' ' + str(nArgs) + '\n'
 
     def writeFunction(self, name, nLocals):
         return 'function ' + name + ' ' + str(nLocals) + '\n'
