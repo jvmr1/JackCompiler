@@ -1,8 +1,8 @@
 
 
 class VMWriter():
-    #def __init__(self, input_file):
-    #criar arquivo .vm pra escrever
+    #constructor
+    #def __init__(self):
 
     def writePush(self, segment, index):
         if segment == 'var':
@@ -46,10 +46,7 @@ class VMWriter():
         return 'function ' + name + ' ' + str(nLocals) + '\n'
 
     def writeReturn(self):
-        # pop temp 0
-        # push constant 0
-        # printar essas coisas no vm quando o return nao tiver nada
-        return 'return'
+        return 'return'+'\n'
 
     def close(self):
         return

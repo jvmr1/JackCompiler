@@ -68,7 +68,6 @@ class CompilationEngine():
             self.eat('(')
             self.compileParameterList()
             self.eat(')')
-            self._vm_string += self.vmW.writeFunction(self.functionName, self.st.varCount('arg'))
             self.compileSubroutineBody()
             self.compileSubroutineDec()
 
@@ -87,6 +86,7 @@ class CompilationEngine():
         self.eat('{')
         while self.tknz.getToken()=='var':
             self.compileVarDec()
+        self._vm_string += self.vmW.writeFunction(self.functionName, self.st.varCount('var'))
         self.compileStatements()
         self.eat('}')
 
@@ -170,8 +170,7 @@ class CompilationEngine():
         self.compileSubroutineCall()
         self.eat(';')
         self._vm_string += self.vmW.writeCall(self.functionName, self.expCount)
-        self._vm_string += self.vmW.writePop('temp', 0) #por que?
-
+        self._vm_string += self.vmW.writePop('temp', 0)
 
     def compileReturn(self):
         self.eat('return')
