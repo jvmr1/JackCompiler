@@ -169,6 +169,8 @@ class CompilationEngine():
         self.compileClassName()
         self.compileSubroutineCall()
         self.eat(';')
+        self._vm_string += self.vmW.writeCall(self.functionName, self.expCount)
+
 
     def compileReturn(self):
         self.eat('return')
@@ -212,8 +214,10 @@ class CompilationEngine():
                 self.compileSubroutineCall()
 
     def compileExpressionList(self):
+        self.expCount=0
         while self.tknz.getToken()!=')':
             self.compileExpression()
+            self.expCount+=1
             if (self.tknz.getToken()==','):
                 self.eat(',')
 
@@ -237,7 +241,6 @@ class CompilationEngine():
         self.eatType('identifier')
 
     def compileSubroutineCall(self):
-        #writeCall
         if (self.tknz.getToken()=='.'):
             self.eat('.')
             self.compileSubroutineName()
@@ -250,15 +253,8 @@ class CompilationEngine():
             self.eat(')')
 
     def compileOp(self):
-        #writeCall
-        #writeArithmetic
-        #self._vm_string += self.vmW.writeFunction(self.functionName, self.st.varCount('arg'))
         vetor = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
         if (self.tknz.getToken() in vetor ):
-            # if (self.tknz.getToken() in ['+', '-']):
-            #     self._vm_string += self.vmW.writeArithmetic(self.tknz.getToken())
-            # elif (self.tknz.getToken() in ['*', '/']):
-            #     self._vm_string += self.vmW.writeCall(self.vmW.writeArithmetic(self.tknz.getToken()), 2)
             self.Op.append(self.tknz.getToken())
             self.tknz.advance()
         else:
