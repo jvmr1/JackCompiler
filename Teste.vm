@@ -9,6 +9,7 @@ add
 pop argument 0
 push local 1
 push argument 0
+lt
 push local 0
 push local 1
 call Math.multiply 2
@@ -22,6 +23,7 @@ return
 function Main.maior 0
 push argument 0
 push argument 1
+gt
 push argument 0
 return
 push argument 1

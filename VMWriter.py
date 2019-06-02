@@ -25,6 +25,10 @@ class VMWriter():
             return 'add'+'\n'
         if (command=='-'):
             return 'sub'+'\n'
+        if (command=='<'):
+            return 'lt'+'\n'
+        if (command=='>'):
+            return 'gt'+'\n'
         if (command=='*'):
             return 'Math.multiply'
         if (command=='/'):
