@@ -10,6 +10,7 @@ class CompilationEngine():
         self._vm_string = ''
         self.tknz.advance()
         self.Op=[]
+        self.Function=[]
 
     def eat(self, vetor):
         if (self.tknz.getToken() in vetor):
@@ -211,7 +212,6 @@ class CompilationEngine():
         else:
             name=self.tknz.getToken()
             kind=self.st.kindOf(name)
-            self._vm_string += self.vmW.writePush(kind, self.st.indexOf(name))
             self.compileVarName()
             if (self.tknz.getToken()=='['):
                 self.eat('[')
@@ -219,6 +219,8 @@ class CompilationEngine():
                 self.eat(']')
             elif (self.tknz.getToken()=='.'):
                 self.compileSubroutineCall()
+            else:
+                self._vm_string += self.vmW.writePush(kind, self.st.indexOf(name))
 
     def compileExpressionList(self):
         self.expCount=0
@@ -248,6 +250,7 @@ class CompilationEngine():
         self.eatType('identifier')
 
     def compileSubroutineCall(self):
+        #self.compileClassName()
         if (self.tknz.getToken()=='.'):
             self.eat('.')
             self.compileSubroutineName()

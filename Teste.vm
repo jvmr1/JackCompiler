@@ -29,7 +29,6 @@ return
 push argument 1
 return
 function Main.main 0
-push NONE None
 push constant 5
 call Output.fatorial 2
 pop temp 0

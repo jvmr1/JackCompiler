@@ -24,8 +24,8 @@ class Main {
     }
 
     function void main() {
-        //do Output.printInt( Main.maior (10,20));
-        do Output.printInt( Main.fatorial (5));
+        //do Output.printInt(Main.maior(10,20));
+        do Output.printInt(Main.fatorial(5));
         return;
     }
 }
