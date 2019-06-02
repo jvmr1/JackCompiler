@@ -44,3 +44,7 @@ class JackTokenizer (object):
 
 	def getToken(self):
 		return self.currToken
+
+	def nextToken(self):
+		if self.hasMoreTokens():
+			return self.tokens[0]

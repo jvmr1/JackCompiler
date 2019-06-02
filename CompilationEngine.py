@@ -41,7 +41,7 @@ class CompilationEngine():
             self.compileType()
             name=self.tknz.getToken()
             self.compileVarName()
-            self.st.define(name, tokenType, kind) #com kind, type e name da variavel definidos, inserir entrada na symboltable
+            self.st.define(name, tokenType, kind)
             while self.tknz.getToken() == ',':
                 self.eat(',')
                 name=self.tknz.getToken()
@@ -87,7 +87,8 @@ class CompilationEngine():
         self.eat('{')
         while self.tknz.getToken()=='var':
             self.compileVarDec()
-        self._vm_string += self.vmW.writeFunction(self.functionName, self.st.varCount('var'))
+        function=self.Function.pop(-1)
+        self._vm_string += self.vmW.writeFunction(function, self.st.varCount('var'))
         self.compileStatements()
         self.eat('}')
 
@@ -169,10 +170,8 @@ class CompilationEngine():
 
     def compileDo(self):
         self.eat('do')
-        self.compileClassName()
         self.compileSubroutineCall()
         self.eat(';')
-        self._vm_string += self.vmW.writeCall(self.functionName, self.expCount)
         self._vm_string += self.vmW.writePop('temp', 0)
 
     def compileReturn(self):
@@ -197,7 +196,6 @@ class CompilationEngine():
                 self._vm_string += self.vmW.writeCall(self.vmW.writeArithmetic(op), 2)
 
     def compileTerm(self):
-        #writePush
         if (self.tknz.tokenType() in ['intConst', 'stringConst', 'keyword']):
             if (self.tknz.tokenType() == 'intConst'):
                 self._vm_string += self.vmW.writePush('constant', self.tknz.getToken())
@@ -210,23 +208,24 @@ class CompilationEngine():
             self.compileUnaryOp()
             self.compileTerm()
         else:
-            name=self.tknz.getToken()
-            kind=self.st.kindOf(name)
-            self.compileVarName()
-            if (self.tknz.getToken()=='['):
+            if (self.tknz.nextToken()=='['):
+                self.compileVarName()
                 self.eat('[')
                 self.compileExpression()
                 self.eat(']')
-            elif (self.tknz.getToken()=='.'):
+            elif (self.tknz.nextToken()=='.'):
                 self.compileSubroutineCall()
             else:
+                name=self.tknz.getToken()
+                kind=self.st.kindOf(name)
                 self._vm_string += self.vmW.writePush(kind, self.st.indexOf(name))
+                self.compileVarName()
 
     def compileExpressionList(self):
         self.expCount=0
         while self.tknz.getToken()!=')':
-            self.compileExpression()
             self.expCount+=1
+            self.compileExpression()
             if (self.tknz.getToken()==','):
                 self.eat(',')
 
@@ -243,14 +242,14 @@ class CompilationEngine():
 
     def compileSubroutineName(self):
         self.subroutineName=self.tknz.getToken()
-        self.functionName = self.className + '.' + self.subroutineName
+        self.Function.append(self.className + '.' + self.subroutineName)
         self.eatType('identifier')
 
     def compileVarName(self):
         self.eatType('identifier')
 
     def compileSubroutineCall(self):
-        #self.compileClassName()
+        self.compileClassName()
         if (self.tknz.getToken()=='.'):
             self.eat('.')
             self.compileSubroutineName()
@@ -261,6 +260,8 @@ class CompilationEngine():
             self.eat('(')
             self.compileExpressionList()
             self.eat(')')
+        function=self.Function.pop(-1)
+        self._vm_string += self.vmW.writeCall(function, self.expCount)
 
     def compileOp(self):
         vetor = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
