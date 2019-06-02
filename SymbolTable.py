@@ -12,11 +12,11 @@ class SymbolTable():
     def define(self, name, tokenType, kind):
         if kind in ('static', 'field'):
             self.classTable[name] = (tokenType, kind, self.kindIndex[kind])
-            print(name, self.classTable[name])
+            #print(name, self.classTable[name])
 
         elif kind in ('arg', 'var'):
             self.subroutineTable[name] = (tokenType, kind, self.kindIndex[kind])
-            print(name, self.subroutineTable[name])
+            #print(name, self.subroutineTable[name])
 
         self.kindIndex[kind]=self.kindIndex[kind]+1
 
@@ -36,35 +36,30 @@ class SymbolTable():
             return 'NONE'
 
     def typeOf(self, name):
-        if name in self.classTable:
-            return self.classTable[name][0]
-
-        elif name in self.subroutineTable:
+        if name in self.subroutineTable:
             return self.subroutineTable[name][0]
 
-    def indexOf(self, name):
-        if name in self.classTable:
-            return self.classTable[name][2]
+        elif name in self.classTable:
+            return self.classTable[name][0]
 
-        elif name in self.subroutineTable:
+    def indexOf(self, name):
+        if name in self.subroutineTable:
             return self.subroutineTable[name][2]
 
-    def findTable(self, name):
-        if name in self.classTable:
-            return 'class'
+        elif name in self.classTable:
+            return self.classTable[name][2]
 
-        elif name in self.subroutineTable:
+    def findTable(self, name):
+        if name in self.subroutineTable:
             return 'subroutine'
 
+        elif name in self.classTable:
+            return 'class'
 
-    # def compileClass(self):
-    #     self.eat('class')
-    #     self.compileClassName()
-    #     self.eat('{')
-    #     self.compileClassVarDec()
-    #     # for keys,values in self.st.classTable.items():
-    #     #     print(keys)
-    #     #     print(values)
-    #     self.compileSubroutineDec()
-    #     self.eat('}')
-    #     return self._vm_string
+
+
+# for keys,values in self.st.classTable.items():
+#     print(keys, values)
+
+# for keys,values in self.st.subroutineTable.items():
+#     print(keys, values)

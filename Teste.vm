@@ -1,16 +1,33 @@
 function Main.fatorial 2
 push constant 1
+pop local 0
 push constant 1
+pop local 1
+push argument 0
 push constant 1
 add
+pop argument 0
+push local 1
+push argument 0
+push local 0
+push local 1
 call Math.multiply 2
+pop local 0
+push local 1
 push constant 1
 add
+pop local 1
+push local 0
 return
 function Main.maior 0
+push argument 0
+push argument 1
+push argument 0
 return
+push argument 1
 return
 function Main.main 0
+push NONE None
 push constant 5
 call Output.fatorial 2
 pop temp 0

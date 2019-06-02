@@ -34,14 +34,14 @@ class CompilationEngine():
 
     def compileClassVarDec(self):
         if (self.tknz.getToken() in ['static', 'field']):
-            print(self.tknz.getToken())
+            #print(self.tknz.getToken())
             kind=self.tknz.getToken()
             self.eat(['static', 'field'])
             tokenType=self.tknz.getToken()
-            print(self.tknz.getToken())
+            #print(self.tknz.getToken())
             self.compileType()
             name=self.tknz.getToken()
-            print(self.tknz.getToken())
+            #print(self.tknz.getToken())
             self.compileVarName()
             self.st.define(name, tokenType, kind) #com kind, type e name da variavel definidos, inserir entrada na symboltable
             while self.tknz.getToken() == ',':
@@ -54,7 +54,7 @@ class CompilationEngine():
 
     def compileSubroutineDec(self):
         if (self.tknz.getToken() in ['constructor', 'function', 'method']):
-            print(self.tknz.getToken())
+            #print(self.tknz.getToken())
             self.st.startSubroutine()
             if self.tknz.getToken() == 'method':
                 tokenType = self.className
@@ -64,7 +64,7 @@ class CompilationEngine():
             subroutineKind=self.tknz.getToken()
             self.eat(['constructor', 'function', 'method'])
             subroutineType=self.tknz.getToken()
-            print(self.tknz.getToken())
+            #print(self.tknz.getToken())
             if self.tknz.getToken() == 'void':
                 self.eat('void')
             else:
@@ -74,17 +74,19 @@ class CompilationEngine():
             self.compileParameterList()
             self.eat(')')
             self.compileSubroutineBody()
+            for keys,values in self.st.subroutineTable.items():
+                print(keys, values)
             self.compileSubroutineDec()
 
     def compileParameterList(self):
         while self.tknz.getToken() != ')':
             tokenType = self.tknz.getToken()
-            print(self.tknz.getToken())
+            #print(self.tknz.getToken())
             self.compileType()
             name = self.tknz.getToken()
-            print(self.tknz.getToken())
+            #print(self.tknz.getToken())
             self.compileVarName()
-            print(self.tknz.getToken())
+            #print(self.tknz.getToken())
             kind = 'arg'
             self.st.define(name, tokenType, kind)
             if (self.tknz.getToken()==','):
@@ -132,8 +134,9 @@ class CompilationEngine():
             raise Exception ("Esperado 'let | if | while | do | return' encontrado '"+self.tknz.getToken()+"'")
 
     def compileLet(self):
-        #writePop
         self.eat('let')
+        name=self.tknz.getToken()
+        kind=self.st.kindOf(name)
         self.compileVarName()
         if (self.tknz.getToken()=='['):
             self.eat('[')
@@ -142,6 +145,7 @@ class CompilationEngine():
         self.eat('=')
         self.compileExpression()
         self.eat(';')
+        self._vm_string += self.vmW.writePop(kind, self.st.indexOf(name))
 
     def compileIf(self):
         #writeIf
@@ -203,8 +207,10 @@ class CompilationEngine():
 
     def compileTerm(self):
         #writePush
+        #print(self.tknz.getToken())
+        #print(self.tknz.tokenType())
         if (self.tknz.tokenType() in ['intConst', 'stringConst', 'keyword']):
-            if (self.tknz.tokenType() == 'intConst'): #desnecessario, talvez
+            if (self.tknz.tokenType() == 'intConst'):
                 self._vm_string += self.vmW.writePush('constant', self.tknz.getToken())
             self.tknz.advance()
         elif (self.tknz.getToken()=='('):
@@ -215,6 +221,9 @@ class CompilationEngine():
             self.compileUnaryOp()
             self.compileTerm()
         else:
+            name=self.tknz.getToken()
+            kind=self.st.kindOf(name)
+            self._vm_string += self.vmW.writePush(kind, self.st.indexOf(name))
             self.compileVarName()
             if (self.tknz.getToken()=='['):
                 self.eat('[')
@@ -240,12 +249,12 @@ class CompilationEngine():
 
     def compileClassName(self):
         self.className=self.tknz.getToken()
-        print(self.tknz.getToken())
+        #print(self.tknz.getToken())
         self.eatType('identifier')
 
     def compileSubroutineName(self):
         self.subroutineName=self.tknz.getToken()
-        print(self.tknz.getToken())
+        #print(self.tknz.getToken())
         self.functionName = self.className + '.' + self.subroutineName
         self.eatType('identifier')
 
