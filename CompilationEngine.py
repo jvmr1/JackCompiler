@@ -34,11 +34,14 @@ class CompilationEngine():
 
     def compileClassVarDec(self):
         if (self.tknz.getToken() in ['static', 'field']):
+            print(self.tknz.getToken())
             kind=self.tknz.getToken()
             self.eat(['static', 'field'])
             tokenType=self.tknz.getToken()
+            print(self.tknz.getToken())
             self.compileType()
             name=self.tknz.getToken()
+            print(self.tknz.getToken())
             self.compileVarName()
             self.st.define(name, tokenType, kind) #com kind, type e name da variavel definidos, inserir entrada na symboltable
             while self.tknz.getToken() == ',':
@@ -51,6 +54,7 @@ class CompilationEngine():
 
     def compileSubroutineDec(self):
         if (self.tknz.getToken() in ['constructor', 'function', 'method']):
+            print(self.tknz.getToken())
             self.st.startSubroutine()
             if self.tknz.getToken() == 'method':
                 tokenType = self.className
@@ -60,6 +64,7 @@ class CompilationEngine():
             subroutineKind=self.tknz.getToken()
             self.eat(['constructor', 'function', 'method'])
             subroutineType=self.tknz.getToken()
+            print(self.tknz.getToken())
             if self.tknz.getToken() == 'void':
                 self.eat('void')
             else:
@@ -74,9 +79,12 @@ class CompilationEngine():
     def compileParameterList(self):
         while self.tknz.getToken() != ')':
             tokenType = self.tknz.getToken()
+            print(self.tknz.getToken())
             self.compileType()
             name = self.tknz.getToken()
+            print(self.tknz.getToken())
             self.compileVarName()
+            print(self.tknz.getToken())
             kind = 'arg'
             self.st.define(name, tokenType, kind)
             if (self.tknz.getToken()==','):
@@ -232,10 +240,12 @@ class CompilationEngine():
 
     def compileClassName(self):
         self.className=self.tknz.getToken()
+        print(self.tknz.getToken())
         self.eatType('identifier')
 
     def compileSubroutineName(self):
         self.subroutineName=self.tknz.getToken()
+        print(self.tknz.getToken())
         self.functionName = self.className + '.' + self.subroutineName
         self.eatType('identifier')
 

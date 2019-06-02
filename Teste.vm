@@ -1,0 +1,18 @@
+function Main.fatorial 2
+push constant 1
+push constant 1
+push constant 1
+add
+call Math.multiply 2
+push constant 1
+add
+return
+function Main.maior 0
+return
+return
+function Main.main 0
+push constant 5
+call Output.fatorial 2
+pop temp 0
+push constant 0
+return
