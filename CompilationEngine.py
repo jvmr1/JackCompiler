@@ -199,7 +199,7 @@ class CompilationEngine():
         while self.tknz.getToken() in ['+', '-', '*', '/', '&', '|', '<', '>', '=']:
             self.compileOp()
             self.compileTerm()
-            if (self.Op[-1] in ['+', '-', '<', '>', '=']):
+            if (self.Op[-1] in ['+', '-', '<', '>', '=', '&', '|']):
                 op=self.Op.pop(-1)
                 self._vm_string += self.vmW.writeArithmetic(op)
             elif (self.Op[-1] in ['*', '/']):
@@ -218,6 +218,9 @@ class CompilationEngine():
         elif (self.tknz.getToken()=='-' or self.tknz.getToken()=='~'):
             self.compileUnaryOp()
             self.compileTerm()
+            if (self.Op[-1] in ['~', '-']):
+                op=self.Op.pop(-1)
+                self._vm_string += self.vmW.writeArithmetic('unary'+op)
         else:
             if (self.tknz.nextToken()=='['):
                 self.compileVarName()

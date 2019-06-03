@@ -29,12 +29,18 @@ class VMWriter():
             return 'gt'+'\n'
         elif (command=='='):
             return 'eq'+'\n'
+        elif (command=='&'):
+            return 'and'+'\n'
+        elif (command=='|'):
+            return 'or'+'\n'
         elif (command=='*'):
             return 'Math.multiply'
         elif (command=='/'):
             return 'Math.divide'
-        elif (command == '~'):
+        elif (command == 'unary~'):
             return 'not\n'
+        elif (command == 'unary-'):
+            return 'neg\n'
 
     def writeLabel(self, label):
         return 'label ' + label + '\n'
