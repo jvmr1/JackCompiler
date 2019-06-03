@@ -23,25 +23,29 @@ class VMWriter():
     def writeArithmetic(self, command):
         if (command=='+'):
             return 'add'+'\n'
-        if (command=='-'):
+        elif (command=='-'):
             return 'sub'+'\n'
-        if (command=='<'):
+        elif (command=='<'):
             return 'lt'+'\n'
-        if (command=='>'):
+        elif (command=='>'):
             return 'gt'+'\n'
-        if (command=='*'):
+        elif (command=='='):
+            return 'eq'+'\n'
+        elif (command=='*'):
             return 'Math.multiply'
-        if (command=='/'):
+        elif (command=='/'):
             return 'Math.divide'
+        elif (command == '~'):
+            return 'not\n'
 
     def writeLabel(self, label):
-        return
+        return 'label ' + label + '\n'
 
     def writeGoto(self, label):
-        return
+        return 'goto ' + label + '\n'
 
     def writeIf(self, label):
-        return
+        return 'if-goto ' + label + '\n'
 
     def writeCall(self, name, nArgs):
         return 'call ' + name + ' ' + str(nArgs) + '\n'

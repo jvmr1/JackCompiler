@@ -84,6 +84,8 @@ class CompilationEngine():
                 self.eat(',')
 
     def compileSubroutineBody(self):
+        self.ifCount = 0
+        self.whileCount = 0
         self.eat('{')
         while self.tknz.getToken()=='var':
             self.compileVarDec()
@@ -140,33 +142,44 @@ class CompilationEngine():
         self._vm_string += self.vmW.writePop(kind, self.st.indexOf(name))
 
     def compileIf(self):
-        #writeIf
-        #writeGoto
-        #writeLabel
         self.eat('if')
         self.eat('(')
         self.compileExpression()
+        if self.Op:
+            print(self.Op[-1])
         self.eat(')')
         self.eat('{')
+        self._vm_string += self.vmW.writeIf('IF_TRUE' + str(self.ifCount))
+        self._vm_string += self.vmW.writeGoto('IF_FALSE' + str(self.ifCount))
+        self._vm_string += self.vmW.writeLabel('IF_TRUE' + str(self.ifCount))
         self.compileStatements()
         self.eat('}')
         if (self.tknz.getToken()=='else'):
+            self._vm_string += self.vmW.writeGoto('IF_END' + str(self.ifCount))
             self.eat('else')
             self.eat('{')
+            self._vm_string += self.vmW.writeLabel('IF_FALSE' + str(self.ifCount))
             self.compileStatements()
             self.eat('}')
+            self._vm_string += self.vmW.writeLabel('IF_END' + str(self.ifCount))
+        else:
+            self._vm_string += self.vmW.writeLabel('IF_FALSE' + str(self.ifCount))
+        self.ifCount += 1
 
     def compileWhile(self):
-        #writeIf
-        #writeGoto
-        #writeLabel
         self.eat('while')
         self.eat('(')
+        self._vm_string += self.vmW.writeLabel('WHILE_EXP' + str(self.whileCount))
         self.compileExpression()
+        self._vm_string += 'not\n'
+        self._vm_string += self.vmW.writeIf('WHILE_END' + str(self.whileCount))
         self.eat(')')
         self.eat('{')
         self.compileStatements()
         self.eat('}')
+        self._vm_string += self.vmW.writeGoto('WHILE_EXP' + str(self.whileCount))
+        self._vm_string += self.vmW.writeLabel('WHILE_END' + str(self.whileCount))
+        self.whileCount += 1
 
     def compileDo(self):
         self.eat('do')
@@ -188,7 +201,7 @@ class CompilationEngine():
         while self.tknz.getToken() in ['+', '-', '*', '/', '&', '|', '<', '>', '=']:
             self.compileOp()
             self.compileTerm()
-            if (self.Op[-1] in ['+', '-', '<', '>']):
+            if (self.Op[-1] in ['+', '-', '<', '>', '=']):
                 op=self.Op.pop(-1)
                 self._vm_string += self.vmW.writeArithmetic(op)
             elif (self.Op[-1] in ['*', '/']):
@@ -274,6 +287,7 @@ class CompilationEngine():
     def compileUnaryOp(self):
         vetor = ['-', '~']
         if (self.tknz.getToken() in vetor ):
+            self.Op.append(self.tknz.getToken())
             self.tknz.advance()
         else:
             raise Exception ("Esperado '-' | '~' encontrado '"+self.tknz.getToken()+"'")

@@ -6,5 +6,5 @@ from CompilationEngine import CompilationEngine
 compEng = CompilationEngine('Teste2.jack')
 vm_string = compEng.compileClass()
 #print(vm_string) #opcional
-with open('Teste.vm', 'w') as vm:
+with open('Teste2.vm', 'w') as vm:
     vm.write(vm_string)
