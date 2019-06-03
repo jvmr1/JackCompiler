@@ -145,8 +145,6 @@ class CompilationEngine():
         self.eat('if')
         self.eat('(')
         self.compileExpression()
-        if self.Op:
-            print(self.Op[-1])
         self.eat(')')
         self.eat('{')
         self._vm_string += self.vmW.writeIf('IF_TRUE' + str(self.ifCount))

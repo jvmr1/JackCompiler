@@ -1,5 +1,3 @@
-
-
 class VMWriter():
     #constructor
     #def __init__(self):
