@@ -5,12 +5,6 @@ from CompilationEngine import CompilationEngine
 
 #implementar caso pra rodar em varios arquivos de uma pasta
 
-'''compEng = CompilationEngine('Teste2.jack')
-vm_string = compEng.compileClass()
-#print(vm_string) #opcional
-with open('Teste2.vm', 'w') as vm:
-    vm.write(vm_string)'''
-
 if __name__ == '__main__':
     args = []
     curr_path = os.getcwd()
