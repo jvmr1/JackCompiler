@@ -89,8 +89,9 @@ class CompilationEngine():
         self.eat('{')
         while self.tknz.getToken()=='var':
             self.compileVarDec()
-        function=self.Function.pop(-1)
-        self._vm_string += self.vmW.writeFunction(function, self.st.varCount('var'))
+        subroutine=self.Function.pop(-1)
+        function=self.Function[0]
+        self._vm_string += self.vmW.writeFunction(function+'.'+subroutine, self.st.varCount('var'))
         self.compileStatements()
         self.eat('}')
 
@@ -252,11 +253,13 @@ class CompilationEngine():
 
     def compileClassName(self):
         self.className=self.tknz.getToken()
+        self.Function.append(self.className)
         self.eatType('identifier')
 
     def compileSubroutineName(self):
         self.subroutineName=self.tknz.getToken()
-        self.Function.append(self.className + '.' + self.subroutineName)
+        self.Function.append(self.subroutineName)
+        #self.Function.append(self.className + '.' + self.subroutineName)
         self.eatType('identifier')
 
     def compileVarName(self):
@@ -274,8 +277,9 @@ class CompilationEngine():
             self.eat('(')
             self.compileExpressionList()
             self.eat(')')
+        subroutine=self.Function.pop(-1)
         function=self.Function.pop(-1)
-        self._vm_string += self.vmW.writeCall(function, self.expCount)
+        self._vm_string += self.vmW.writeCall(function+'.'+subroutine, self.expCount)
 
     def compileOp(self):
         vetor = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
