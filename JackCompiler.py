@@ -3,8 +3,6 @@ import sys
 import os
 from CompilationEngine import CompilationEngine
 
-#implementar caso pra rodar em varios arquivos de uma pasta
-
 if __name__ == '__main__':
     args = []
     curr_path = os.getcwd()
