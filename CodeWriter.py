@@ -11,7 +11,11 @@ class CodeWriter():
     def writePushPop(self, command, arg1, arg2):
         if command=="C_PUSH":
             if arg1 == "constant":
+<<<<<<< HEAD
                 self.asm.write("@"+str(arg2)+" // push "+str(arg1)+" "+str(arg2)+"\n")
+=======
+                self.asm.write("@"+arg2+" // push "+arg1+" "+arg2+"\n")
+>>>>>>> 444c56bfe8f7c2f3ffc79cab50c20a8c23788f9d
                 self.asm.write("D=A\n")
                 self.asm.write("@SP\n")
                 self.asm.write("A=M\n")
@@ -43,7 +47,11 @@ class CodeWriter():
         elif command == "C_POP":
             if arg1 in ["static" ,"temp", "pointer"]:
                 segment = self.mapRegisters(arg1, arg2)
+<<<<<<< HEAD
                 self.asm.write("@SP // pop "+arg1+" "+arg2+"\n")
+=======
+                self.asm.write("@SP // pop "+arg1" "+arg2+"\n")
+>>>>>>> 444c56bfe8f7c2f3ffc79cab50c20a8c23788f9d
                 self.asm.write("M=M-1\n")
                 self.asm.write("A=M\n")
                 self.asm.write("D=M\n")
