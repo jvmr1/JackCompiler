@@ -9,7 +9,61 @@ class CodeWriter():
         self.labelcounter = 0
 
     def writePushPop(self, command, arg1, arg2):
-        return 0
+        if command=="C_PUSH":
+            if arg1 == "constant":
+                self.asm.write("@"+str(arg2)+" // push "+str(arg1)+" "+str(arg2)+"\n")
+                self.asm.write("D=A\n")
+                self.asm.write("@SP\n")
+                self.asm.write("A=M\n")
+                self.asm.write("M=D\n")
+                self.asm.write("@SP\n")
+                self.asm.write("M=M+1\n")
+            elif arg1 in  ["local", "argument", "this", "that"]:
+                segment = self.mapRegisters(arg1, arg2)
+                self.asm.write("@"+segment+" // push "+arg1+" "+arg2+"\n")
+                self.asm.write("D=M\n")
+                self.asm.write("@"+arg2+"\n")
+                self.asm.write("A=D+A\n")
+                self.asm.write("D=M\n")
+                self.asm.write("@SP\n")
+                self.asm.write("A=M\n")
+                self.asm.write("M=D\n")
+                self.asm.write("@SP\n")
+                self.asm.write("M=M+1\n")
+            elif arg1 in ["static" ,"temp", "pointer"]:
+                segment = self.mapRegisters(arg1, arg2)
+                self.asm.write("@"+segment+" // push "+arg1+" "+arg2+"\n")
+                self.asm.write("D=M\n")
+                self.asm.write("@SP\n")
+                self.asm.write("A=M\n")
+                self.asm.write("M=D\n")
+                self.asm.write("@SP\n")
+                self.asm.write("M=M+1\n")
+
+        elif command == "C_POP":
+            if arg1 in ["static" ,"temp", "pointer"]:
+                segment = self.mapRegisters(arg1, arg2)
+                self.asm.write("@SP // pop "+arg1+" "+arg2+"\n")
+                self.asm.write("M=M-1\n")
+                self.asm.write("A=M\n")
+                self.asm.write("D=M\n")
+                self.asm.write("@"+segment+"\n")
+                self.asm.write("M=D\n")
+            else:
+                segment = self.mapRegisters(arg1, arg2)
+                self.asm.write("@"+segment+" // pop "+arg1+" "+arg2+"\n")
+                self.asm.write("D=M\n")
+                self.asm.write("@"+arg2+"\n")
+                self.asm.write("D=D+A\n")
+                self.asm.write("@R13\n")
+                self.asm.write("M=D\n")
+                self.asm.write("@SP\n")
+                self.asm.write("M=M-1\n")
+                self.asm.write("A=M\n")
+                self.asm.write("D=M\n")
+                self.asm.write("@R13\n")
+                self.asm.write("A=M\n")
+                self.asm.write("M=D\n")
 
     def writeArithmetic(self, command):
         if command == "add":

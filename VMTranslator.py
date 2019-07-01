@@ -13,8 +13,8 @@ if __name__ == '__main__':
         arg2 = parser.arg2()
         #print(ctype, arg1, arg2,'\n')
         if ctype == "C_ARITHMETIC":
-            writer.writeArithmetic(command)
+            codewriter.writeArithmetic(parse.currCommand[0])
         elif ctype == "C_PUSH" or ctype == 'C_POP':
-            writer.writePushPop(ctype, arg1, arg2)
+            codewriter.writePushPop(ctype, arg1, arg2)
         parser.advance()
     codewriter.close()
