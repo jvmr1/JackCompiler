@@ -1,10 +1,13 @@
 class CodeWriter():
-    #def __init__
+    def __init__(self, filename):
+        self.asm=open(filename, 'w')
+        #self.asm.write(command)
 
-    #def setFileName
+    def writeArithmetic(self, command):
+        return 0
 
-    #def writeArithmetic
+    def writePushPop(self, command, arg1, arg2):
+        return 0
 
-    def writePushPop(self, arg1, arg2):
-
-    #def close
+    def close(self):
+        self.asm.close()

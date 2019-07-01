@@ -2,71 +2,62 @@ import re
 
 class Parser (object):
     def __init__(self, path):
+        self.commands=[]
         with open(path) as in_file:
             commands = in_file.read()
         pattern_comment = '\/(\*|)\*(.|\n)*?\*\/|\/\/.*'
         commands = re.sub(pattern_comment, '', commands)
-        self.commands=commands.split()
-        self.asm_string=''
-        self.currCommand = None
+        commands=commands.split('\n')
+        for i in range(len(commands)):
+            if len(commands[i])==0:
+                pass
+            else:
+                self.commands.append(commands[i].split())
+        self.currCommand = self.commands[0]
 
-    def Printar(self):
-        for command in self.commands:
-            self.asm_string+=command+'\n'
-        return self.asm_string
+    def hasMoreCommands(self):
+        if self.commands:
+            return True
+        return False
 
-	def hasMoreCommands(self):
-		if self.commands:
-			return True
-		return False
-
-	def advance(self):
-		if self.hasMoreCommands():
-            if self.commandType() in ["C_ARITHMETIC", "C_RETURN"]:
-			    self.currCommand = self.commands.pop(0)
-            elif self.commandType() in ["C_LABEL", "C_GOTO", "C_IF"]:
-                self.commands.pop(0)
-                self.currCommand = self.commands.pop(0)
-            elif self.commandType() in ["C_PUSH", "C_POP", "C_FUNCTION", "C_CALL"]:
-                self.commands.pop(0)
-                self.commands.pop(0)
-                self.currCommand = self.commands.pop(0)
-
+    def advance(self):
+        if self.hasMoreCommands():
+            self.currCommand = self.commands.pop(0)
 
     def commandType(self):
-        if self.currCommand in ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]:
+        if self.currCommand[0] in ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]:
             return "C_ARITHMETIC"
-        elif self.currCommand == "push":
+        elif self.currCommand[0] == "push":
             return "C_PUSH"
-        elif self.currCommand == "pop":
+        elif self.currCommand[0] == "pop":
             return "C_POP"
-        elif self.currCommand == "label":
+        elif self.currCommand[0] == "label":
             return "C_LABEL"
-        elif self.currCommand == "goto":
+        elif self.currCommand[0] == "goto":
             return "C_GOTO"
-        elif self.currCommand == "if-goto":
+        elif self.currCommand[0] == "if-goto":
             return "C_IF"
-        elif self.currCommand == "function":
+        elif self.currCommand[0] == "function":
             return "C_FUNCTION"
-        elif self.currCommand == "return":
+        elif self.currCommand[0] == "return":
             return "C_RETURN"
-        elif self.currCommand == "call":
+        elif self.currCommand[0] == "call":
             return "C_CALL"
         else:
             return None
 
     def arg1(self):
-		if self.hasMoreCommands():
+        if self.hasMoreCommands():
             if self.commandType() in ["C_ARITHMETIC"]:
-                return str(self.currCommand)
+                return str(self.currCommand[0])
             elif self.commandType() in ["C_RETURN"]:
                 return None
             else:
-			    return str(self.commands[0])
+                return str(self.currCommand[1])
 
     def arg2(self):
-		if self.hasMoreCommands():
+        if self.hasMoreCommands():
             if self.commandType() in ["C_PUSH", "C_POP", "C_FUNCTION", "C_CALL"]:
-			    return int(self.commands[1])
+                return int(self.currCommand[2])
             else:
                 return None
