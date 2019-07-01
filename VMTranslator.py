@@ -13,11 +13,7 @@ if __name__ == '__main__':
         arg2 = parser.arg2()
         #print(ctype, arg1, arg2,'\n')
         if ctype == "C_ARITHMETIC":
-<<<<<<< HEAD
             codewriter.writeArithmetic(parse.currCommand[0])
-=======
-            writer.writeArithmetic(parse.currCommand[0])
->>>>>>> 444c56bfe8f7c2f3ffc79cab50c20a8c23788f9d
         elif ctype == "C_PUSH" or ctype == 'C_POP':
             codewriter.writePushPop(ctype, arg1, arg2)
         parser.advance()
