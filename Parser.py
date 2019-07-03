@@ -5,7 +5,7 @@ class Parser (object):
         self.commands=[]
         with open(path) as in_file:
             commands = in_file.read()
-        pattern_comment = '\/(\*|)\*(.|\n)*?\*\/|\/\/.*'
+        pattern_comment = '\/(\*|)\*(.|\n)*?\*\/|\/\/.*' 
         commands = re.sub(pattern_comment, '', commands)
         commands=commands.split('\n')
         for i in range(len(commands)):
@@ -46,7 +46,7 @@ class Parser (object):
             return None
 
     def arg1(self):
-        if self.hasMoreCommands():
+            #if self.hasMoreCommands():
             if self.commandType() in ["C_ARITHMETIC"]:
                 return str(self.currCommand[0])
             elif self.commandType() in ["C_RETURN"]:
@@ -55,7 +55,7 @@ class Parser (object):
                 return str(self.currCommand[1])
 
     def arg2(self):
-        if self.hasMoreCommands():
+            #if self.hasMoreCommands():
             if self.commandType() in ["C_PUSH", "C_POP", "C_FUNCTION", "C_CALL"]:
                 return int(self.currCommand[2])
             else:

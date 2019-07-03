@@ -1,12 +1,24 @@
 class CodeWriter():
     def __init__(self, filename):
         self.asm=open(filename, 'w')
+        '''self.asm.write("@256\n")
+        self.asm.write("D=A\n")
+        self.asm.write("@SP\n")
+        self.asm.write("M=D\n")'''
+        #self.asm.write(command)
+        self.labelcounter = 0
+        self.callCount = 0
+        
+    def setModuleName(self, filename):
+        name = filename.split('/')
+        self.moduleName = name[-1].split('.')[0]
+
+    def writeInit(self):
         self.asm.write("@256\n")
         self.asm.write("D=A\n")
         self.asm.write("@SP\n")
         self.asm.write("M=D\n")
-        #self.asm.write(command)
-        self.labelcounter = 0
+        self.writeCall("Sys.init", 0)
 
     def writePushPop(self, command, arg1, arg2):
         if command=="C_PUSH":
@@ -195,6 +207,143 @@ class CodeWriter():
         self.asm.write("A=A-1\n")
         self.asm.write("M=!M\n")
 
+    def writeLabel(self, label):
+        self.asm.write("(" + label + ")\n")
+
+    def writeGoto(self, label):
+        self.asm.write("@" + label + "\n")
+        self.asm.write("0;JMP\n")
+
+    def writeIf(self, label):
+        self.asm.write ("@SP\n")
+        self.asm.write ("AM=M-1\n")
+        self.asm.write ("D=M\n")
+        self.asm.write ("M=0\n")
+        self.asm.write ("@" + label + "\n")
+        self.asm.write ("D;JNE\n")
+
+    def writeFunction(self, funcName, n):
+        loopLabel = funcName + "_INIT_LOCALS_LOOP"
+        loopEndLabel = funcName + "_INIT_LOCALS_END"
+        self.asm.write("(" + funcName + ")" + "// initializa local variables\n")
+        self.asm.write("@" + str(n) + "\n")
+        self.asm.write("D=A\n")
+        self.asm.write("@R13\n")
+        self.asm.write("M=D\n")
+        self.asm.write("(" + loopLabel + ")\n")
+        self.asm.write("@" + loopEndLabel + "\n")
+        self.asm.write("D;JEQ\n")
+        self.asm.write("@0\n")
+        self.asm.write("D=A\n")
+        self.asm.write("@SP\n")
+        self.asm.write("A=M\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@SP\n")
+        self.asm.write("M=M+1\n")
+        self.asm.write("@R13\n")
+        self.asm.write("MD=M-1\n")
+        self.asm.write("@" + loopLabel + "\n")
+        self.asm.write("0;JMP\n")
+        self.asm.write("(" + loopEndLabel + ")\n")
+
+    def writeReturn(self):
+        self.asm.write("@LCL\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@R13\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@5\n")
+        self.asm.write("A=D-A\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@R14\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@SP\n")
+        self.asm.write("AM=M-1\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@ARG\n")
+        self.asm.write("A=M\n")
+        self.asm.write("M=D\n")
+        self.asm.write("D=A\n")
+        self.asm.write("@SP\n")
+        self.asm.write("M=D+1\n")
+        self.asm.write("@R13\n")
+        self.asm.write("AM=M-1\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@THAT\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@R13\n")
+        self.asm.write("AM=M-1\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@THIS\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@R13\n")
+        self.asm.write("AM=M-1\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@ARG\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@R13\n")
+        self.asm.write("AM=M-1\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@LCL\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@R14\n")
+        self.asm.write("A=M\n")
+        self.asm.write("0;JMP\n") 
+
+    def writeCall(self, funcName, n):
+        com = "// call " + funcName + " " + str(n)
+        returnSymbol = funcName + "_RETURN_" + str(self.callCount)
+        self.callCount += 1
+        self.asm.write("@" + returnSymbol + com + "\n")
+        self.asm.write("D=A\n")
+        self.asm.write("@SP\n")
+        self.asm.write("A=M\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@SP\n")
+        self.asm.write("M=M+1\n")
+        self.asm.write("@LCL\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@SP\n")
+        self.asm.write("A=M\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@SP\n")
+        self.asm.write("M=M+1\n")
+        self.asm.write("@ARG\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@SP\n")
+        self.asm.write("A=M\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@SP\n")
+        self.asm.write("M=M+1\n")
+        self.asm.write("@THIS\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@SP\n")
+        self.asm.write("A=M\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@SP\n")
+        self.asm.write("M=M+1\n")
+        self.asm.write("@THAT\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@SP\n")
+        self.asm.write("A=M\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@SP\n")
+        self.asm.write("M=M+1\n")
+        self.asm.write("@" + str(n) + "\n")
+        self.asm.write("D=A\n")
+        self.asm.write("@5\n")
+        self.asm.write("D=D+A\n")
+        self.asm.write("@SP\n")
+        self.asm.write("D=M-D\n")
+        self.asm.write("@ARG\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@SP\n")
+        self.asm.write("D=M\n")
+        self.asm.write("@LCL\n")
+        self.asm.write("M=D\n")
+        self.asm.write("@" + funcName + "\n")
+        self.asm.write("0;JMP\n")
+        self.asm.write("(" + returnSymbol + ")\n")
+
     def mapRegisters(self, segment, i):
         if segment == "local":   
             return "LCL"
@@ -208,6 +357,8 @@ class CodeWriter():
             return "R" + str(3 + i)
         if segment == "temp":
             return "R" + str(5 + i)
+        if segment == "static":
+            return self.moduleName + '.' + str(i)
 
     def close(self):
         self.asm.close()
