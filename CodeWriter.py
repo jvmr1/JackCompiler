@@ -20,9 +20,9 @@ class CodeWriter():
                 self.asm.write("M=M+1\n")
             elif arg1 in  ["local", "argument", "this", "that"]:
                 segment = self.mapRegisters(arg1, arg2)
-                self.asm.write("@"+segment+" // push "+arg1+" "+arg2+"\n")
+                self.asm.write("@"+segment+" // push "+arg1+" "+str(arg2)+"\n")
                 self.asm.write("D=M\n")
-                self.asm.write("@"+arg2+"\n")
+                self.asm.write("@"+str(arg2)+"\n")
                 self.asm.write("A=D+A\n")
                 self.asm.write("D=M\n")
                 self.asm.write("@SP\n")
@@ -32,7 +32,7 @@ class CodeWriter():
                 self.asm.write("M=M+1\n")
             elif arg1 in ["static" ,"temp", "pointer"]:
                 segment = self.mapRegisters(arg1, arg2)
-                self.asm.write("@"+segment+" // push "+arg1+" "+arg2+"\n")
+                self.asm.write("@"+segment+" // push "+arg1+" "+str(arg2)+"\n")
                 self.asm.write("D=M\n")
                 self.asm.write("@SP\n")
                 self.asm.write("A=M\n")
@@ -43,7 +43,7 @@ class CodeWriter():
         elif command == "C_POP":
             if arg1 in ["static" ,"temp", "pointer"]:
                 segment = self.mapRegisters(arg1, arg2)
-                self.asm.write("@SP // pop "+arg1+" "+arg2+"\n")
+                self.asm.write("@SP // pop "+arg1+" "+str(arg2)+"\n")
                 self.asm.write("M=M-1\n")
                 self.asm.write("A=M\n")
                 self.asm.write("D=M\n")
@@ -51,9 +51,9 @@ class CodeWriter():
                 self.asm.write("M=D\n")
             else:
                 segment = self.mapRegisters(arg1, arg2)
-                self.asm.write("@"+segment+" // pop "+arg1+" "+arg2+"\n")
+                self.asm.write("@"+segment+" // pop "+arg1+" "+str(arg2)+"\n")
                 self.asm.write("D=M\n")
-                self.asm.write("@"+arg2+"\n")
+                self.asm.write("@"+str(arg2)+"\n")
                 self.asm.write("D=D+A\n")
                 self.asm.write("@R13\n")
                 self.asm.write("M=D\n")
@@ -91,7 +91,7 @@ class CodeWriter():
         self.asm.write("A=M\n")
         self.asm.write("D=M\n")
         self.asm.write("A=A-1\n")
-        self.asm.write("M=M+D\n")
+        self.asm.write("M=D+M\n")
 
     def writeSub(self):
         self.asm.write("@SP // sub\n")
@@ -194,6 +194,20 @@ class CodeWriter():
         self.asm.write("A=M\n")
         self.asm.write("A=A-1\n")
         self.asm.write("M=!M\n")
+
+    def mapRegisters(self, segment, i):
+        if segment == "local":   
+            return "LCL"
+        if segment == "argument":
+            return "ARG"
+        if segment == "this":
+            return "THIS"
+        if segment == "that":
+            return "THAT"
+        if segment == "pointer":
+            return "R" + str(3 + i)
+        if segment == "temp":
+            return "R" + str(5 + i)
 
     def close(self):
         self.asm.close()

@@ -13,7 +13,7 @@ class Parser (object):
                 pass
             else:
                 self.commands.append(commands[i].split())
-        self.currCommand = self.commands[0]
+        self.advance()
 
     def hasMoreCommands(self):
         if self.commands:
