@@ -1,14 +1,9 @@
 class CodeWriter():
     def __init__(self, filename):
         self.asm=open(filename, 'w')
-        '''self.asm.write("@256\n")
-        self.asm.write("D=A\n")
-        self.asm.write("@SP\n")
-        self.asm.write("M=D\n")'''
-        #self.asm.write(command)
         self.labelcounter = 0
         self.callCount = 0
-        
+
     def setModuleName(self, filename):
         name = filename.split('/')
         self.moduleName = name[-1].split('.')[0]
@@ -287,7 +282,7 @@ class CodeWriter():
         self.asm.write("M=D\n")
         self.asm.write("@R14\n")
         self.asm.write("A=M\n")
-        self.asm.write("0;JMP\n") 
+        self.asm.write("0;JMP\n")
 
     def writeCall(self, funcName, n):
         com = "// call " + funcName + " " + str(n)
@@ -345,7 +340,7 @@ class CodeWriter():
         self.asm.write("(" + returnSymbol + ")\n")
 
     def mapRegisters(self, segment, i):
-        if segment == "local":   
+        if segment == "local":
             return "LCL"
         if segment == "argument":
             return "ARG"

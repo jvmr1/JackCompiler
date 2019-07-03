@@ -14,27 +14,14 @@ if __name__ == '__main__':
             files = os.listdir(arg)
             vm_files = [arg+curr_file for curr_file in files if curr_file.find('.vm') != -1]
             asm_name = arg + re.split('\/', arg)[-2] + '.asm'
-            '''for curr_file in vm_files:
-                compEng = CompilationEngine(arg+curr_file)
-                vm_string = compEng.compileClass()
-                name = re.split('\.', curr_file)[0]
-                with open(arg + name + '.vm', 'w') as vm:
-                    vm.write(vm_string)'''
         elif os.path.isfile(arg) and arg.find('.vm') != -1:
             vm_files.append(arg)
             asm_name = arg
-            '''compEng = CompilationEngine(arg)
-            vm_string = compEng.compileClass()
-            name = re.split('\.', arg)[0]
-            with open(name + '.vm', 'w') as vm:
-                vm.write(vm_string)'''
+
         else:
             print("It is not a directory or a file")
-        
-        if vm_files:
-            #print(vm_files)
-            #print(asm_name)
 
+        if vm_files:
             codewriter=CodeWriter(asm_name)
 
             if len(vm_files) > 1:
@@ -48,7 +35,6 @@ if __name__ == '__main__':
                     ctype = parser.commandType()
                     arg1 = parser.arg1()
                     arg2 = parser.arg2()
-                    #print(ctype, arg1, arg2,'\n')
                     if ctype == "C_ARITHMETIC":
                         codewriter.writeArithmetic(parser.currCommand[0])
                     elif ctype == "C_PUSH" or ctype == 'C_POP':
@@ -58,7 +44,7 @@ if __name__ == '__main__':
                     elif ctype == "C_GOTO":
                         codewriter.writeGoto(arg1)
                     elif ctype == "C_IF":
-                        codewriter.writeIf(arg1) 
+                        codewriter.writeIf(arg1)
                     elif ctype == "C_FUNCTION":
                         codewriter.writeFunction(arg1, arg2)
                     elif ctype == "C_CALL":
